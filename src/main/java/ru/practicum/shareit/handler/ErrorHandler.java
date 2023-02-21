@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.shareit.exceptions.NotAccess;
+import ru.practicum.shareit.exceptions.AccessException;
 import ru.practicum.shareit.exceptions.UserAlreadyExist;
 import ru.practicum.shareit.exceptions.UserOrItemNotExist;
 import ru.practicum.shareit.item.ItemController;
@@ -14,7 +14,7 @@ import javax.validation.ValidationException;
 
 @RestControllerAdvice(assignableTypes = {UserController.class, ItemController.class})
 public class ErrorHandler {
-    @ExceptionHandler({UserOrItemNotExist.class, NotAccess.class})
+    @ExceptionHandler({UserOrItemNotExist.class, AccessException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse notExist(final RuntimeException e) {
         return new ErrorResponse(e.getMessage());

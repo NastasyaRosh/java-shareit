@@ -26,7 +26,8 @@ public class UserService {
     }
 
     public UserDto updateUser(Long userId, UserDto userDto) {
-        checkUpdateUser(userId, userDto);
+        checkUpdatingUser(userId, userDto);
+        setFieldsInUpdatingUser(userId, userDto);
         User user = userRepository.updateUser(userId, UserMapper.toUser(userDto));
         return UserMapper.toUserDto(user);
     }
@@ -59,16 +60,19 @@ public class UserService {
         }
     }
 
-    private void checkUpdateUser(Long userId, UserDto userDto) {
-        Optional<User> sameEmailUser = userRepository.checkEmail(userDto.getEmail());
-        if (sameEmailUser.isPresent() && (sameEmailUser.get().getId() != userId)) {
-            throw new UserAlreadyExist(String.format("Пользователь с почтой %s уже существует.", userDto.getEmail()));
-        }
+    private void setFieldsInUpdatingUser(Long userId, UserDto userDto) {
         if (userDto.getName() == null) {
             userDto.setName(getUser(userId).getName());
         }
         if (userDto.getEmail() == null) {
             userDto.setEmail(getUser(userId).getEmail());
+        }
+    }
+
+    private void checkUpdatingUser(Long userId, UserDto userDto) {
+        Optional<User> sameEmailUser = userRepository.checkEmail(userDto.getEmail());
+        if (sameEmailUser.isPresent() && (sameEmailUser.get().getId() != userId)) {
+            throw new UserAlreadyExist(String.format("Пользователь с почтой %s уже существует.", userDto.getEmail()));
         }
     }
 }

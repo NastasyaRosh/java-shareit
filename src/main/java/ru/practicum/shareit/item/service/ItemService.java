@@ -2,7 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exceptions.NotAccess;
+import ru.practicum.shareit.exceptions.AccessException;
 import ru.practicum.shareit.exceptions.UserOrItemNotExist;
 import ru.practicum.shareit.item.dao.ItemDao;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -29,7 +29,8 @@ public class ItemService {
     }
 
     public ItemDto updateItem(ItemDto itemDto, Long itemId, Long userId) {
-        checkUpdateRequest(itemDto, itemId, userId);
+        checkUpdatingItem(itemId, userId);
+        setFieldsInUpdatingItem(itemDto, itemId);
         Item item = installOwner(itemDto, userId);
         return ItemMapper.toItemDto(itemRepository.updateItem(item, itemId, userId));
     }
@@ -66,10 +67,7 @@ public class ItemService {
         return item;
     }
 
-    private void checkUpdateRequest(ItemDto itemDto, Long itemId, Long userId) {
-        if (!(getAllMyItems(userId).contains(getItem(itemId)))) {
-            throw new NotAccess("Вы не имеете доступа к данной операции.");
-        }
+    private void setFieldsInUpdatingItem(ItemDto itemDto, Long itemId) {
         if (itemDto.getName() == null) {
             itemDto.setName(getItem(itemId).getName());
         }
@@ -78,6 +76,12 @@ public class ItemService {
         }
         if (itemDto.getAvailable() == null) {
             itemDto.setAvailable(getItem(itemId).getAvailable());
+        }
+    }
+
+    private void checkUpdatingItem(Long itemId, Long userId) {
+        if (!(getAllMyItems(userId).contains(getItem(itemId)))) {
+            throw new AccessException("Вы не имеете доступа к данной операции.");
         }
     }
 }
