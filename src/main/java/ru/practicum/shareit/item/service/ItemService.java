@@ -81,8 +81,7 @@ public class ItemService {
 
     private void validationUpdatingItem(Long itemId, Long userId) {
         if (!(getAllMyItems(userId).contains(getItem(itemId)))) {
-            throw new AccessException(String.format("Пользователь с id = %s не имеет доступа к вещи с id = %s"
-                    , userId, itemId));
+            throw new AccessException(String.format("Пользователь с id = %s не имеет доступа к вещи с id = %s", userId, itemId));
         }
     }
 }
