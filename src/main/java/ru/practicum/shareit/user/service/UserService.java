@@ -2,8 +2,8 @@ package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exceptions.UserAlreadyExist;
-import ru.practicum.shareit.exceptions.UserOrItemNotExist;
+import ru.practicum.shareit.exceptions.UserAlreadyExistException;
+import ru.practicum.shareit.exceptions.EntityNotFoundException;
 import ru.practicum.shareit.user.dao.UserDao;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
@@ -26,14 +26,14 @@ public class UserService {
     }
 
     public UserDto updateUser(Long userId, UserDto userDto) {
-        checkUpdatingUser(userId, userDto);
+        validationUpdatingUser(userId, userDto);
         setFieldsInUpdatingUser(userId, userDto);
         User user = userRepository.updateUser(userId, UserMapper.toUser(userDto));
         return UserMapper.toUserDto(user);
     }
 
     public UserDto getUser(Long userId) {
-        User user = userRepository.getUser(userId).orElseThrow(() -> new UserOrItemNotExist("Запрашиваемого пользователя не существует."));
+        User user = userRepository.getUser(userId).orElseThrow(() -> new EntityNotFoundException("Запрашиваемого пользователя не существует."));
         return UserMapper.toUserDto(user);
     }
 
@@ -56,7 +56,7 @@ public class UserService {
             throw new ValidationException("Передано пустое имя или пустая/неверная почта.");
         }
         if (userRepository.checkEmail(userDto.getEmail()).isPresent()) {
-            throw new UserAlreadyExist(String.format("Пользователь с почтой %s уже существует.", userDto.getEmail()));
+            throw new UserAlreadyExistException(String.format("Пользователь с почтой %s уже существует.", userDto.getEmail()));
         }
     }
 
@@ -69,10 +69,10 @@ public class UserService {
         }
     }
 
-    private void checkUpdatingUser(Long userId, UserDto userDto) {
+    private void validationUpdatingUser(Long userId, UserDto userDto) {
         Optional<User> sameEmailUser = userRepository.checkEmail(userDto.getEmail());
         if (sameEmailUser.isPresent() && (sameEmailUser.get().getId() != userId)) {
-            throw new UserAlreadyExist(String.format("Пользователь с почтой %s уже существует.", userDto.getEmail()));
+            throw new UserAlreadyExistException(String.format("Пользователь с почтой %s уже существует.", userDto.getEmail()));
         }
     }
 }
