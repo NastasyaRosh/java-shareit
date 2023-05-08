@@ -8,11 +8,14 @@ import ru.practicum.shareit.booking.dto.InBookingDto;
 import ru.practicum.shareit.booking.dto.OutBookingDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "/bookings")
@@ -45,6 +48,24 @@ public class BookingController {
                                              @PathVariable Long bookingId) {
         log.debug("Поиск бронирования c идентификатором: " + bookingId);
         return BookingMapper.toBookingDto(bookingService.getBookingById(bookingId, userId));
+    }
+
+    @GetMapping
+    public List<OutBookingDto> findAllByBooker(
+            @RequestHeader("x-sharer-user-id") Long userId,
+            @RequestParam(defaultValue = "ALL") String state) {
+        State bookingState = State.checkState(state);
+        log.debug("Получение списка всех бронирований текущего пользователя.");
+        return BookingMapper.mapToBookingDto(bookingService.findAllByBooker(userId, bookingState));
+    }
+
+    @GetMapping("owner")
+    public List<OutBookingDto> getAllByOwner(
+            @RequestHeader("x-sharer-user-id") Long userId,
+            @RequestParam(defaultValue = "ALL") String state) {
+        State bookingState = State.checkState(state);
+        log.debug("Получение списка бронирований для всех вещей текущего пользователя.");
+        return BookingMapper.mapToBookingDto(bookingService.findAllByItemsOwnerId(userId, bookingState));
     }
 
 }

@@ -6,18 +6,22 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dao.BookingDao;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatuses;
+import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.exceptions.AccessException;
 import ru.practicum.shareit.exceptions.EntityNotFoundException;
 import ru.practicum.shareit.exceptions.WrongDatesException;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.ValidationException;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class BookingService {
     private final BookingDao bookingRepository;
+    private final UserService userService;
     @Transactional
     public Booking createBooking (Booking booking, Long userId){
         booking.setStatus(BookingStatuses.WAITING);
@@ -46,10 +50,20 @@ public class BookingService {
         return booking;
     }
 
+    public List<Booking> findAllByBooker(Long bookerId, State state) {
+        userService.findById(bookerId);
+        return userBookingsByState(bookerId, state, false);
+    }
+
+    public List<Booking> findAllByItemsOwnerId(Long ownerId, State state) {
+        userService.findById(ownerId);
+        return userBookingsByState(ownerId, state, true);
+    }
+
     private void checkBookingCreate(Booking booking, Long userId) {
         Item item = booking.getItem();
         if (item.getOwner().getId() == userId) {
-            throw new ValidationException("Пользователь не может бронировать свою же вещь.");
+            throw new AccessException("Пользователь не может бронировать свою же вещь.");
         }
         if (!item.getAvailable()) {
             throw new ValidationException("Вещь не доступна.");
@@ -62,11 +76,41 @@ public class BookingService {
 
     private void checkBookingUpdate(Booking booking, Long userId){
         if (booking.getItem().getOwner().getId() != userId) {
-            throw new ValidationException("Пользователь не может распоряжаться чужой вещью.");
+            throw new AccessException("Пользователь не может распоряжаться чужой вещью.");
         }
         if (!BookingStatuses.WAITING.equals(booking.getStatus())) {
             throw new ValidationException("Решение уже было принято.");
         }
+    }
+
+    private List<Booking> userBookingsByState(Long userId, State state, Boolean isOwner) {
+        List<Booking> outList = null;
+        switch (state) {
+            case ALL:
+                outList = bookingRepository.findByUserId(userId, isOwner, bookingRepository.SORT_DESC);
+                break;
+            case WAITING:
+                outList = bookingRepository.findByUserIdAndStatus(userId, isOwner, BookingStatuses.WAITING
+                        , bookingRepository.SORT_DESC);
+                break;
+            case REJECTED:
+                outList = bookingRepository.findByUserIdAndStatus(userId, isOwner, BookingStatuses.REJECTED
+                        , bookingRepository.SORT_DESC);
+                break;
+            case CURRENT:
+                outList = bookingRepository.findByUserCurrent(userId, isOwner, LocalDateTime.now()
+                        , bookingRepository.SORT_DESC);
+                break;
+            case PAST:
+                outList = bookingRepository.findByUserPast(userId, isOwner, LocalDateTime.now()
+                        , bookingRepository.SORT_DESC);
+                break;
+            case FUTURE:
+                outList = bookingRepository.findByUserFuture(userId, isOwner, LocalDateTime.now()
+                        , bookingRepository.SORT_DESC);
+                break;
+        }
+        return outList;
     }
 
 }
