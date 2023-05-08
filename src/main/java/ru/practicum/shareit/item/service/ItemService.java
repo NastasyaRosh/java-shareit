@@ -2,19 +2,18 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exceptions.AccessException;
 import ru.practicum.shareit.exceptions.EntityNotFoundException;
 import ru.practicum.shareit.item.dao.ItemDao;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.mapper.UserMapper;
-import ru.practicum.shareit.booking.service.UserService;
+import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.ValidationException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,33 +21,34 @@ public class ItemService {
     private final ItemDao itemRepository;
     private final UserService userService;
 
-    public ItemDto createItem(ItemDto itemDto, Long userId) {
-        checkCreationRequest(itemDto);
-        Item item = installOwner(itemDto, userId);
-        return ItemMapper.toItemDto(itemRepository.createItem(item));
+    @Transactional
+    public Item createItem(Item item, Long userId) {
+        checkCreationRequest(ItemMapper.toItemDto(item));
+        Item itemWithOwner = installOwner(item, userId);
+        return itemRepository.save(itemWithOwner);
     }
-
-    public ItemDto updateItem(ItemDto itemDto, Long itemId, Long userId) {
+    @Transactional
+    public Item updateItem(Item item, Long itemId, Long userId) {
         validationUpdatingItem(itemId, userId);
-        setFieldsInUpdatingItem(itemDto, itemId);
-        Item item = installOwner(itemDto, userId);
-        return ItemMapper.toItemDto(itemRepository.updateItem(item, itemId, userId));
+        Item oldItem = getItem(itemId);
+        setFieldsInUpdatingItem(item, itemId, oldItem);
+        return oldItem;
     }
 
-    public ItemDto getItem(Long itemId) {
-        Item item = itemRepository.getItem(itemId).orElseThrow(() -> new EntityNotFoundException("Запрашиваемой вещи не существует."));
-        return ItemMapper.toItemDto(item);
+    public Item getItem(Long itemId) {
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new EntityNotFoundException("Запрашиваемой вещи не существует."));
+        return item;
     }
 
-    public List<ItemDto> getAllMyItems(Long userId) {
-        return itemRepository.getAllMyItems(userId).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
+    public List<Item> getAllMyItems(Long userId) {
+        return itemRepository.findAllByOwnerId(userId);
     }
 
-    public List<ItemDto> searchItems(String text) {
+    public List<Item> searchItems(String text) {
         if (text.isBlank() || text.isEmpty()) {
             return new ArrayList<>();
         }
-        return itemRepository.searchItems(text).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
+        return itemRepository.searchItems(text);
     }
 
     private void checkCreationRequest(ItemDto itemDto) {
@@ -61,21 +61,26 @@ public class ItemService {
         }
     }
 
-    private Item installOwner(ItemDto itemDto, Long userId) {
-        Item item = ItemMapper.toItem(itemDto);
+    private Item installOwner(Item item, Long userId) {
         item.setOwner(userService.findById(userId));
         return item;
     }
 
-    private void setFieldsInUpdatingItem(ItemDto itemDto, Long itemId) {
-        if (itemDto.getName() == null) {
-            itemDto.setName(getItem(itemId).getName());
+    private void setFieldsInUpdatingItem(Item item, Long itemId, Item oldItem) {
+        if (item.getName() == null) {
+            item.setName(getItem(itemId).getName());
+        } else {
+            oldItem.setName(item.getName());
         }
-        if (itemDto.getDescription() == null) {
-            itemDto.setDescription(getItem(itemId).getDescription());
+        if (item.getDescription() == null) {
+            item.setDescription(getItem(itemId).getDescription());
+        } else {
+            oldItem.setDescription(item.getDescription());
         }
-        if (itemDto.getAvailable() == null) {
-            itemDto.setAvailable(getItem(itemId).getAvailable());
+        if (item.getAvailable() == null) {
+            item.setAvailable(getItem(itemId).getAvailable());
+        } else {
+            oldItem.setAvailable(item.getAvailable());
         }
     }
 

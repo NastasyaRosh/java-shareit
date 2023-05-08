@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.dao;
+/*package ru.practicum.shareit.item.dao;
 
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.item.model.Item;
@@ -48,4 +48,4 @@ public class ItemDaoMemoryImpl implements ItemDao {
         item.setId(++this.id);
         return this.id;
     }
-}
+}*/
