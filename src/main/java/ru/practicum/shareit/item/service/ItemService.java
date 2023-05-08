@@ -6,8 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exceptions.AccessException;
 import ru.practicum.shareit.exceptions.EntityNotFoundException;
 import ru.practicum.shareit.item.dao.ItemDao;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.service.UserService;
 
@@ -23,7 +21,7 @@ public class ItemService {
 
     @Transactional
     public Item createItem(Item item, Long userId) {
-        checkCreationRequest(ItemMapper.toItemDto(item));
+        checkCreationRequest(item);
         Item itemWithOwner = installOwner(item, userId);
         return itemRepository.save(itemWithOwner);
     }
@@ -51,12 +49,12 @@ public class ItemService {
         return itemRepository.searchItems(text);
     }
 
-    private void checkCreationRequest(ItemDto itemDto) {
-        if (itemDto.getName() == null || itemDto.getDescription() == null
-                || itemDto.getName().isBlank() || itemDto.getDescription().isBlank()) {
+    private void checkCreationRequest(Item item) {
+        if (item.getName() == null || item.getDescription() == null
+                || item.getName().isBlank() || item.getDescription().isBlank()) {
             throw new ValidationException("Передано пустое имя или описание.");
         }
-        if (itemDto.getAvailable() == null) {
+        if (item.getAvailable() == null) {
             throw new ValidationException("Не передано значение доступности.");
         }
     }

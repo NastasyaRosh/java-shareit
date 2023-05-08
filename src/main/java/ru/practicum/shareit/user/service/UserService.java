@@ -5,8 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exceptions.EntityNotFoundException;
 import ru.practicum.shareit.user.dao.UserDao;
-import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
 import javax.validation.ValidationException;
@@ -20,7 +18,7 @@ public class UserService {
 
     @Transactional
     public User createUser(User user) {
-        checkCreationUser(UserMapper.toUserDto(user));
+        checkCreationUser(user);
         return userRepository.save(user);
     }
 
@@ -55,8 +53,8 @@ public class UserService {
         return email.contains("@");
     }
 
-    private void checkCreationUser(UserDto userDto) {
-        if (userDto.getEmail() == null || userDto.getName() == null || !isEmail(userDto.getEmail())) {
+    private void checkCreationUser(User user) {
+        if (user.getEmail() == null || user.getName() == null || !isEmail(user.getEmail())) {
             throw new ValidationException("Передано пустое имя или пустая/неверная почта.");
         }
     }
