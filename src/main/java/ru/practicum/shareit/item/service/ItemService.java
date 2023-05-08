@@ -9,7 +9,7 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.mapper.UserMapper;
-import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.booking.service.UserService;
 
 import javax.validation.ValidationException;
 import java.util.ArrayList;
@@ -63,7 +63,7 @@ public class ItemService {
 
     private Item installOwner(ItemDto itemDto, Long userId) {
         Item item = ItemMapper.toItem(itemDto);
-        item.setOwner(UserMapper.toUser(userService.getUser(userId)));
+        item.setOwner(userService.findById(userId));
         return item;
     }
 
