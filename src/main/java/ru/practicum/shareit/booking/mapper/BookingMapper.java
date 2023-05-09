@@ -2,9 +2,11 @@ package ru.practicum.shareit.booking.mapper;
 
 import ru.practicum.shareit.booking.dto.InBookingDto;
 import ru.practicum.shareit.booking.dto.OutBookingDto;
+import ru.practicum.shareit.booking.dto.ShortBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatuses;
 import ru.practicum.shareit.exceptions.WrongDatesException;
+import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
@@ -18,7 +20,7 @@ public class BookingMapper {
                 .id(booking.getId())
                 .start(booking.getStart())
                 .end(booking.getEnd())
-                .item(booking.getItem())
+                .item(ItemMapper.toShortItemDto(booking.getItem()))
                 .booker(UserMapper.toUserDto(booking.getBooker()))
                 .status(booking.getStatus())
                 .build();
@@ -40,5 +42,12 @@ public class BookingMapper {
 
     public static List<OutBookingDto> mapToBookingDto(List<Booking> bookings) {
         return bookings.stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
+    }
+
+    public static ShortBookingDto toShortBookingDto(Booking booking) {
+        return ShortBookingDto.builder()
+                .id(booking.getId())
+                .bookerId(booking.getBooker().getId())
+                .build();
     }
 }

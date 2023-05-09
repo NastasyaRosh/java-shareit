@@ -3,6 +3,9 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.dao.BookingDao;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingStatuses;
 import ru.practicum.shareit.exceptions.AccessException;
 import ru.practicum.shareit.exceptions.EntityNotFoundException;
 import ru.practicum.shareit.item.dao.ItemDao;
@@ -10,14 +13,20 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.ValidationException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor
 public class ItemService {
     private final ItemDao itemRepository;
     private final UserService userService;
+    private final BookingDao bookingRepository;
 
     @Transactional
     public Item createItem(Item item, Long userId) {
@@ -35,11 +44,12 @@ public class ItemService {
 
     public Item getItem(Long itemId) {
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new EntityNotFoundException("Запрашиваемой вещи не существует."));
-        return item;
+        return setBookingsForItem(item);
     }
 
     public List<Item> getAllMyItems(Long userId) {
-        return itemRepository.findAllByOwnerId(userId);
+        List<Item> items = itemRepository.findAllByOwnerId(userId);
+        return setBookingsForListItems(items);
     }
 
     public List<Item> searchItems(String text) {
@@ -86,5 +96,46 @@ public class ItemService {
         if (!(getAllMyItems(userId).contains(getItem(itemId)))) {
             throw new AccessException(String.format("Пользователь с id = %s не имеет доступа к вещи с id = %s", userId, itemId));
         }
+    }
+
+    private Item setBookingsForItem(Item item) {
+        item.setLastBooking(
+                bookingRepository.findTopByItemIdAndStatusAndStartLessThanEqual(
+                        item.getId(),
+                        BookingStatuses.APPROVED,
+                        LocalDateTime.now(),
+                        bookingRepository.START_DESC)
+        );
+        item.setNextBooking(
+                bookingRepository.findTopByItemIdAndStatusAndStartAfter(
+                        item.getId(),
+                        BookingStatuses.APPROVED,
+                        LocalDateTime.now(),
+                        bookingRepository.START_ASC)
+        );
+        return item;
+    }
+
+    private List<Item> setBookingsForListItems(List<Item> items) {
+        Map<Item, List<Booking>> bookings = bookingRepository.findByItemInAndStatus(
+                        items, BookingStatuses.APPROVED, bookingRepository.START_DESC).stream()
+                .collect(groupingBy(Booking::getItem, toList()));
+        /*Map<Item, List<Comment>> comments = commentRep.findByItemIn(items, commentRep.CREATED_DESC).stream()
+                .collect(groupingBy(Comment::getItem, toList()));*/
+
+        for (Item item : items) {
+            //item.setComments(comments.get(item));
+            if (bookings.get(item) != null) {
+                item.setLastBooking(bookings.get(item).stream()
+                        .filter(booking -> !booking.getStart().isAfter(LocalDateTime.now()))
+                        .findFirst().orElse(null)
+                );
+                item.setNextBooking(bookings.get(item).stream()
+                        .filter(booking -> booking.getStart().isAfter(LocalDateTime.now()))
+                        .reduce((first, last) -> last).orElse(null)
+                );
+            }
+        }
+        return items;
     }
 }

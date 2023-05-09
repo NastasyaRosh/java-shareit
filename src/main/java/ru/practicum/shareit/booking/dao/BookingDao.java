@@ -6,13 +6,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatuses;
+import ru.practicum.shareit.item.model.Item;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
 public interface BookingDao extends JpaRepository<Booking, Long>{
-    Sort SORT_DESC = Sort.by(Sort.Direction.DESC, "start");
+    Sort START_DESC = Sort.by(Sort.Direction.DESC, "start");
+    Sort START_ASC = Sort.by(Sort.Direction.ASC, "start");
 
     @Query("select b " +
             "from Booking b " +
@@ -44,4 +46,9 @@ public interface BookingDao extends JpaRepository<Booking, Long>{
             "  and b.end <= ?3 ")
     List<Booking> findByUserPast(Long userId, Boolean isOwner, LocalDateTime now, Sort sort);
 
+    Booking findTopByItemIdAndStatusAndStartLessThanEqual(Long itemId, BookingStatuses status, LocalDateTime now, Sort sort);
+
+    Booking findTopByItemIdAndStatusAndStartAfter(Long itemId,BookingStatuses status, LocalDateTime now, Sort sort);
+
+    List<Booking> findByItemInAndStatus(List<Item> items, BookingStatuses status, Sort sort);
 }

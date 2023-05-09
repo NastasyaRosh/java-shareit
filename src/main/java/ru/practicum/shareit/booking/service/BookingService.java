@@ -87,27 +87,27 @@ public class BookingService {
         List<Booking> outList = null;
         switch (state) {
             case ALL:
-                outList = bookingRepository.findByUserId(userId, isOwner, bookingRepository.SORT_DESC);
+                outList = bookingRepository.findByUserId(userId, isOwner, bookingRepository.START_DESC);
                 break;
             case WAITING:
                 outList = bookingRepository.findByUserIdAndStatus(userId, isOwner, BookingStatuses.WAITING
-                        , bookingRepository.SORT_DESC);
+                        , bookingRepository.START_DESC);
                 break;
             case REJECTED:
                 outList = bookingRepository.findByUserIdAndStatus(userId, isOwner, BookingStatuses.REJECTED
-                        , bookingRepository.SORT_DESC);
+                        , bookingRepository.START_DESC);
                 break;
             case CURRENT:
                 outList = bookingRepository.findByUserCurrent(userId, isOwner, LocalDateTime.now()
-                        , bookingRepository.SORT_DESC);
+                        , bookingRepository.START_DESC);
                 break;
             case PAST:
                 outList = bookingRepository.findByUserPast(userId, isOwner, LocalDateTime.now()
-                        , bookingRepository.SORT_DESC);
+                        , bookingRepository.START_DESC);
                 break;
             case FUTURE:
                 outList = bookingRepository.findByUserFuture(userId, isOwner, LocalDateTime.now()
-                        , bookingRepository.SORT_DESC);
+                        , bookingRepository.START_DESC);
                 break;
         }
         return outList;
