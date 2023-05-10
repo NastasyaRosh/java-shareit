@@ -91,24 +91,24 @@ public class BookingService {
                 outList = bookingRepository.findByUserId(userId, isOwner, bookingRepository.START_DESC);
                 break;
             case WAITING:
-                outList = bookingRepository.findByUserIdAndStatus(userId, isOwner, BookingStatuses.WAITING
-                        , bookingRepository.START_DESC);
+                outList = bookingRepository.findByUserIdAndStatus(userId, isOwner, BookingStatuses.WAITING,
+                        bookingRepository.START_DESC);
                 break;
             case REJECTED:
-                outList = bookingRepository.findByUserIdAndStatus(userId, isOwner, BookingStatuses.REJECTED
-                        , bookingRepository.START_DESC);
+                outList = bookingRepository.findByUserIdAndStatus(userId, isOwner, BookingStatuses.REJECTED,
+                        bookingRepository.START_DESC);
                 break;
             case CURRENT:
-                outList = bookingRepository.findByUserCurrent(userId, isOwner, LocalDateTime.now()
-                        , bookingRepository.START_DESC);
+                outList = bookingRepository.findByUserCurrent(userId, isOwner, LocalDateTime.now(),
+                        bookingRepository.START_DESC);
                 break;
             case PAST:
-                outList = bookingRepository.findByUserPast(userId, isOwner, LocalDateTime.now()
-                        , bookingRepository.START_DESC);
+                outList = bookingRepository.findByUserPast(userId, isOwner, LocalDateTime.now(),
+                        bookingRepository.START_DESC);
                 break;
             case FUTURE:
-                outList = bookingRepository.findByUserFuture(userId, isOwner, LocalDateTime.now()
-                        , bookingRepository.START_DESC);
+                outList = bookingRepository.findByUserFuture(userId, isOwner, LocalDateTime.now(),
+                        bookingRepository.START_DESC);
                 break;
         }
         return outList;

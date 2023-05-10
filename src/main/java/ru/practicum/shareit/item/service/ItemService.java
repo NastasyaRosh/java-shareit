@@ -160,8 +160,8 @@ public class ItemService {
         List<Booking> bookings =
                 bookingRepository.findAllRealItemBookingsForUserAtTheMoment(itemId, userId, LocalDateTime.now());
         if (bookings.size() == 0) {
-            throw new ValidationException(String.format("Пользователь с id = %s не может комментировать вещь с id = %s."
-                    , userId, itemId));
+            throw new ValidationException(String.format("Пользователь с id = %s не может комментировать вещь с id = %s.",
+                    userId, itemId));
         }
     }
 }
