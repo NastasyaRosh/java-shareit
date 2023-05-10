@@ -45,7 +45,7 @@ public class BookingController {
 
     @GetMapping("/{bookingId}")
     public OutBookingDto getBookingById(@RequestHeader("x-sharer-user-id") Long userId,
-                                             @PathVariable Long bookingId) {
+                                        @PathVariable Long bookingId) {
         log.debug("Поиск бронирования c идентификатором: " + bookingId);
         return BookingMapper.toBookingDto(bookingService.getBookingById(bookingId, userId));
     }

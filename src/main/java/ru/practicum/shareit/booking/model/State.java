@@ -12,4 +12,4 @@ public enum State {
             throw new WrongStateException("Unknown state: UNSUPPORTED_STATUS");
         }
     }
-    }
+}

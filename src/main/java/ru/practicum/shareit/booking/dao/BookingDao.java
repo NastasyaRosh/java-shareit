@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public interface BookingDao extends JpaRepository<Booking, Long>{
+public interface BookingDao extends JpaRepository<Booking, Long> {
     Sort START_DESC = Sort.by(Sort.Direction.DESC, "start");
     Sort START_ASC = Sort.by(Sort.Direction.ASC, "start");
 
@@ -48,12 +48,10 @@ public interface BookingDao extends JpaRepository<Booking, Long>{
 
     Booking findTopByItemIdAndStatusAndStartLessThanEqual(Long itemId, BookingStatuses status, LocalDateTime now, Sort sort);
 
-    Booking findTopByItemIdAndStatusAndStartAfter(Long itemId,BookingStatuses status, LocalDateTime now, Sort sort);
+    Booking findTopByItemIdAndStatusAndStartAfter(Long itemId, BookingStatuses status, LocalDateTime now, Sort sort);
 
     List<Booking> findByItemInAndStatus(List<Item> items, BookingStatuses status, Sort sort);
 
-    /*@Query("select b from Booking  b where b.item.id = ?1 and b.booker.id = ?2" +
-            " and ((b.status = 'APPROVED' and b.start < ?3) or (b.status = 'CANCELED'))")*/
     @Query("select b from Booking  b where b.item.id = ?1 and b.booker.id = ?2" +
             " and (b.status = 'APPROVED' and b.end < ?3)")
     List<Booking> findAllRealItemBookingsForUserAtTheMoment(Long itemId, Long userId, LocalDateTime currentTime);

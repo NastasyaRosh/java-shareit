@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class BookingMapper {
-    public static OutBookingDto toBookingDto(Booking booking){
+    public static OutBookingDto toBookingDto(Booking booking) {
         return OutBookingDto.builder()
                 .id(booking.getId())
                 .start(booking.getStart())
@@ -26,7 +26,7 @@ public class BookingMapper {
                 .build();
     }
 
-    public static Booking toBooking(InBookingDto inBookingDto, Item item, User user){
+    public static Booking toBooking(InBookingDto inBookingDto, Item item, User user) {
         if ((inBookingDto.getStart() == null) || (inBookingDto.getEnd() == null)) {
             throw new WrongDatesException("Проверьте запрашиваемые даты.");
         }

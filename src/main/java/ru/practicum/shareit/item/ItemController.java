@@ -11,7 +11,6 @@ import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
-import ru.practicum.shareit.user.service.UserService;
 
 import java.util.List;
 
@@ -31,7 +30,7 @@ public class ItemController {
 
     @PatchMapping("/{itemId}")
     public OutItemDto updateItem(@RequestHeader("x-sharer-user-id") Long userId,
-                                @RequestBody InItemDto inItemDto, @PathVariable Long itemId) {
+                                 @RequestBody InItemDto inItemDto, @PathVariable Long itemId) {
         log.debug("Обновление информации о вещи с идентификатором: " + itemId);
         return ItemMapper.toItemDto(itemService.updateItem(ItemMapper.toItem(inItemDto), itemId, userId), userId);
     }

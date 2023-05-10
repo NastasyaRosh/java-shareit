@@ -25,7 +25,7 @@ public class UserService {
     @Transactional
     public User updateUser(Long userId, User user) {
         User oldUser = userRepository.findById(userId).orElseThrow(
-                () -> new  EntityNotFoundException("Запрашиваемого пользователя не существует.")
+                () -> new EntityNotFoundException("Запрашиваемого пользователя не существует.")
         );
         if (user.getName() != null && !user.getName().isBlank()) {
             oldUser.setName(user.getName());
@@ -36,7 +36,7 @@ public class UserService {
         return oldUser;
     }
 
-    public User findById (Long userId) {
+    public User findById(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("Запрашиваемого пользователя не существует."));
         return user;
     }
@@ -44,6 +44,7 @@ public class UserService {
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
+
     @Transactional
     public void deleteUser(Long userId) {
         userRepository.deleteById(userId);

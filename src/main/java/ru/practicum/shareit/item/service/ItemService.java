@@ -38,6 +38,7 @@ public class ItemService {
         Item itemWithOwner = installOwner(item, userId);
         return itemRepository.save(itemWithOwner);
     }
+
     @Transactional
     public Item updateItem(Item item, Long itemId, Long userId) {
         validationUpdatingItem(itemId, userId);
@@ -135,12 +136,9 @@ public class ItemService {
         Map<Item, List<Booking>> bookings = bookingRepository.findByItemInAndStatus(
                         items, BookingStatuses.APPROVED, bookingRepository.START_DESC).stream()
                 .collect(groupingBy(Booking::getItem, toList()));
-        /*Map<Item, List<Comment>> comments = commentRep.findByItemIn(items, commentRep.CREATED_DESC).stream()
-                .collect(groupingBy(Comment::getItem, toList()));*/
         for (Item item : items) {
             Booking lastBooking = null;
             Booking nextBooking = null;
-            //item.setComments(comments.get(item));
             if (bookings.get(item) != null) {
                 lastBooking = bookings.get(item).stream()
                         .filter(booking -> !booking.getStart().isAfter(LocalDateTime.now()))
@@ -155,7 +153,7 @@ public class ItemService {
         return items;
     }
 
-    private void checkComment(Long itemId, Long userId, String text){
+    private void checkComment(Long itemId, Long userId, String text) {
         if (text.isEmpty() || text.isBlank()) {
             throw new ValidationException("Нельзя оставить пустой комментарий.");
         }

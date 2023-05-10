@@ -22,15 +22,16 @@ import java.util.List;
 public class BookingService {
     private final BookingDao bookingRepository;
     private final UserService userService;
+
     @Transactional
-    public Booking createBooking (Booking booking, Long userId){
+    public Booking createBooking(Booking booking, Long userId) {
         booking.setStatus(BookingStatuses.WAITING);
         checkBookingCreate(booking, userId);
         return bookingRepository.save(booking);
     }
 
     @Transactional
-    public Booking updateBooking (Long userId, Long bookingId, Boolean approved) {
+    public Booking updateBooking(Long userId, Long bookingId, Boolean approved) {
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(
                 () -> new EntityNotFoundException("Запрашиваемого бронирования не существует.")
         );
@@ -39,7 +40,7 @@ public class BookingService {
         return booking;
     }
 
-    public Booking getBookingById (Long bookingId, Long userId) {
+    public Booking getBookingById(Long bookingId, Long userId) {
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(
                 () -> new EntityNotFoundException("Запрашиваемого бронирования не существует.")
         );
@@ -69,12 +70,12 @@ public class BookingService {
             throw new ValidationException("Вещь не доступна.");
         }
         if ((booking.getEnd().isBefore(booking.getStart())) || (booking.getEnd().equals(booking.getStart()))
-            || (booking.getStart().isBefore(LocalDateTime.now()))) {
+                || (booking.getStart().isBefore(LocalDateTime.now()))) {
             throw new WrongDatesException("Проверьте запрашиваемые даты.");
         }
     }
 
-    private void checkBookingUpdate(Booking booking, Long userId){
+    private void checkBookingUpdate(Booking booking, Long userId) {
         if (booking.getItem().getOwner().getId() != userId) {
             throw new AccessException("Пользователь не может распоряжаться чужой вещью.");
         }

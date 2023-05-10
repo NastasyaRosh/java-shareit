@@ -41,6 +41,7 @@ public class ItemMapper {
                 .available(inItemDto.getAvailable())
                 .build();
     }
+
     public static List<OutItemDto> listToItemDto(List<Item> items, Long userId) {
         return items.stream().map(item -> toItemDto(item, userId)).collect(Collectors.toList());
     }
