@@ -122,19 +122,20 @@ public class ItemService {
                 .collect(groupingBy(Booking::getItem, toList()));
         /*Map<Item, List<Comment>> comments = commentRep.findByItemIn(items, commentRep.CREATED_DESC).stream()
                 .collect(groupingBy(Comment::getItem, toList()));*/
-
         for (Item item : items) {
+            Booking lastBooking = null;
+            Booking nextBooking = null;
             //item.setComments(comments.get(item));
             if (bookings.get(item) != null) {
-                item.setLastBooking(bookings.get(item).stream()
+                lastBooking = bookings.get(item).stream()
                         .filter(booking -> !booking.getStart().isAfter(LocalDateTime.now()))
-                        .findFirst().orElse(null)
-                );
-                item.setNextBooking(bookings.get(item).stream()
+                        .findFirst().orElse(null);
+                nextBooking = bookings.get(item).stream()
                         .filter(booking -> booking.getStart().isAfter(LocalDateTime.now()))
-                        .reduce((first, last) -> last).orElse(null)
-                );
+                        .skip(1).findFirst().orElse(null);
             }
+            item.setLastBooking(lastBooking);
+            item.setNextBooking(nextBooking);
         }
         return items;
     }
