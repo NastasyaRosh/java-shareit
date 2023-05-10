@@ -51,4 +51,10 @@ public interface BookingDao extends JpaRepository<Booking, Long>{
     Booking findTopByItemIdAndStatusAndStartAfter(Long itemId,BookingStatuses status, LocalDateTime now, Sort sort);
 
     List<Booking> findByItemInAndStatus(List<Item> items, BookingStatuses status, Sort sort);
+
+    /*@Query("select b from Booking  b where b.item.id = ?1 and b.booker.id = ?2" +
+            " and ((b.status = 'APPROVED' and b.start < ?3) or (b.status = 'CANCELED'))")*/
+    @Query("select b from Booking  b where b.item.id = ?1 and b.booker.id = ?2" +
+            " and (b.status = 'APPROVED' and b.end < ?3)")
+    List<Booking> findAllRealItemBookingsForUserAtTheMoment(Long itemId, Long userId, LocalDateTime currentTime);
 }

@@ -8,8 +8,11 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatuses;
 import ru.practicum.shareit.exceptions.AccessException;
 import ru.practicum.shareit.exceptions.EntityNotFoundException;
+import ru.practicum.shareit.item.dao.CommentDao;
 import ru.practicum.shareit.item.dao.ItemDao;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.ValidationException;
@@ -27,6 +30,7 @@ public class ItemService {
     private final ItemDao itemRepository;
     private final UserService userService;
     private final BookingDao bookingRepository;
+    private final CommentDao commentRepository;
 
     @Transactional
     public Item createItem(Item item, Long userId) {
@@ -44,7 +48,9 @@ public class ItemService {
 
     public Item getItem(Long itemId) {
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new EntityNotFoundException("Запрашиваемой вещи не существует."));
-        return setBookingsForItem(item);
+        setBookingsForItem(item);
+        item.setComments(commentRepository.findByItemId(itemId, commentRepository.CREATED_DESC));
+        return item;
     }
 
     public List<Item> getAllMyItems(Long userId) {
@@ -57,6 +63,15 @@ public class ItemService {
             return new ArrayList<>();
         }
         return itemRepository.searchItems(text);
+    }
+
+    @Transactional
+    public Comment createComment(Long userId, Long itemId, String text) {
+        checkComment(itemId, userId, text);
+        User user = userService.findById(userId);
+        Item item = getItem(itemId);
+        Comment comment = Comment.builder().text(text).author(user).item(item).created(LocalDateTime.now()).build();
+        return commentRepository.save(comment);
     }
 
     private void checkCreationRequest(Item item) {
@@ -138,5 +153,17 @@ public class ItemService {
             item.setNextBooking(nextBooking);
         }
         return items;
+    }
+
+    private void checkComment(Long itemId, Long userId, String text){
+        if (text.isEmpty() || text.isBlank()) {
+            throw new ValidationException("Нельзя оставить пустой комментарий.");
+        }
+        List<Booking> bookings =
+                bookingRepository.findAllRealItemBookingsForUserAtTheMoment(itemId, userId, LocalDateTime.now());
+        if (bookings.size() == 0) {
+            throw new ValidationException(String.format("Пользователь с id = %s не может комментировать вещь с id = %s."
+                    , userId, itemId));
+        }
     }
 }

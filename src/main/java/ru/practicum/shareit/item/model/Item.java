@@ -9,6 +9,8 @@ import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "items")
@@ -33,6 +35,8 @@ public class Item {
     private Booking lastBooking;
     @Transient
     private Booking nextBooking;
+    @Transient
+    private List<Comment> comments = new ArrayList<>();
     /*@ManyToOne
     @JoinColumn(name = "request_id", referencedColumnName = "id")
     private ItemRequest request;*/

@@ -6,6 +6,7 @@ import ru.practicum.shareit.item.dto.OutItemDto;
 import ru.practicum.shareit.item.dto.ShortItemDto;
 import ru.practicum.shareit.item.model.Item;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,8 +20,8 @@ public class ItemMapper {
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
-                /*.comments(item.getComments() != null ?
-                        CommentMapper.mapToCommentDto(item.getComments()) : new ArrayList<>())*/
+                .comments(item.getComments() != null ?
+                        CommentMapper.mapToCommentDto(item.getComments()) : new ArrayList<>())
                 .build();
 
         if (userId.equals(item.getOwner().getId())) {
