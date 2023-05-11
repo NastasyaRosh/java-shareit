@@ -4,13 +4,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dao.BookingDao;
+import ru.practicum.shareit.booking.dto.InBookingDto;
+import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatuses;
 import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.exceptions.AccessException;
 import ru.practicum.shareit.exceptions.EntityNotFoundException;
 import ru.practicum.shareit.exceptions.WrongDatesException;
+import ru.practicum.shareit.exceptions.WrongStateException;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.ValidationException;
@@ -22,9 +27,13 @@ import java.util.List;
 public class BookingService {
     private final BookingDao bookingRepository;
     private final UserService userService;
+    private final ItemService itemService;
 
     @Transactional
-    public Booking createBooking(Booking booking, Long userId) {
+    public Booking createBooking(InBookingDto inBookingDto, Long userId) {
+        User booker = userService.findById(userId);
+        Item item = itemService.getItem(inBookingDto.getItemId());
+        Booking booking = BookingMapper.toBooking(inBookingDto, item, booker);
         booking.setStatus(BookingStatuses.WAITING);
         checkBookingCreate(booking, userId);
         return bookingRepository.save(booking);
@@ -51,14 +60,16 @@ public class BookingService {
         return booking;
     }
 
-    public List<Booking> findAllByBooker(Long bookerId, State state) {
+    public List<Booking> findAllByBooker(Long bookerId, String state) {
+        State bookingState = State.checkState(state);
         userService.findById(bookerId);
-        return userBookingsByState(bookerId, state, false);
+        return userBookingsByState(bookerId, bookingState, false);
     }
 
-    public List<Booking> findAllByItemsOwnerId(Long ownerId, State state) {
+    public List<Booking> findAllByItemsOwnerId(Long ownerId, String state) {
+        State bookingState = State.checkState(state);
         userService.findById(ownerId);
-        return userBookingsByState(ownerId, state, true);
+        return userBookingsByState(ownerId, bookingState, true);
     }
 
     private void checkBookingCreate(Booking booking, Long userId) {
@@ -110,6 +121,8 @@ public class BookingService {
                 outList = bookingRepository.findByUserFuture(userId, isOwner, LocalDateTime.now(),
                         bookingRepository.START_DESC);
                 break;
+            default:
+                throw new WrongStateException("Unknown state: UNSUPPORTED_STATUS");
         }
         return outList;
     }

@@ -14,8 +14,8 @@ import java.util.List;
 @Entity
 @Table(name = "items")
 @Builder
-@AllArgsConstructor
 @RequiredArgsConstructor
+@AllArgsConstructor
 @Data
 public class Item {
     @Id
@@ -36,7 +36,4 @@ public class Item {
     private Booking nextBooking;
     @Transient
     private List<Comment> comments = new ArrayList<>();
-    /*@ManyToOne
-    @JoinColumn(name = "request_id", referencedColumnName = "id")
-    private ItemRequest request;*/
 }

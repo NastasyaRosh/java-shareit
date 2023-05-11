@@ -10,17 +10,10 @@ import java.time.LocalDateTime;
  * TODO Sprint add-item-requests.
  */
 @Data
+@Builder
 public class ItemRequest {
     private Long id;
     private String description;
     private User requester;
     private LocalDateTime created;
-
-    @Builder
-    public ItemRequest(Long id, String description, User requester, LocalDateTime created) {
-        this.id = id;
-        this.description = description;
-        this.requester = requester;
-        this.created = created;
-    }
 }
