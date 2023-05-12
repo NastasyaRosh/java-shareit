@@ -1,27 +1,39 @@
 package ru.practicum.shareit.item.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import ru.practicum.shareit.request.model.ItemRequest;
+import lombok.RequiredArgsConstructor;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.user.model.User;
 
-/**
- * TODO Sprint add-controllers.
- */
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = "items")
+@Builder
+@RequiredArgsConstructor
+@AllArgsConstructor
 @Data
 public class Item {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "name", nullable = false)
     private String name;
+    @Column(name = "description", nullable = false)
     private String description;
+    @Column(name = "is_available", nullable = false)
     private Boolean available;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "owner_id", referencedColumnName = "id", nullable = false)
     private User owner;
-    private ItemRequest request;
-
-    @Builder
-    public Item(Long id, String name, String description, Boolean available) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.available = available;
-    }
+    @Transient
+    private Booking lastBooking;
+    @Transient
+    private Booking nextBooking;
+    @Transient
+    private List<Comment> comments = new ArrayList<>();
 }
