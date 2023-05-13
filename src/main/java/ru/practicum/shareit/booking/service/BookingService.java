@@ -1,6 +1,9 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dao.BookingDao;
@@ -60,16 +63,16 @@ public class BookingService {
         return booking;
     }
 
-    public List<Booking> findAllByBooker(Long bookerId, String state) {
+    public List<Booking> findAllByBooker(Long bookerId, String state, Integer from, Integer size) {
         State bookingState = State.checkState(state);
         userService.findById(bookerId);
-        return userBookingsByState(bookerId, bookingState, false);
+        return userBookingsByState(bookerId, bookingState, false, from, size);
     }
 
-    public List<Booking> findAllByItemsOwnerId(Long ownerId, String state) {
+    public List<Booking> findAllByItemsOwnerId(Long ownerId, String state, Integer from, Integer size) {
         State bookingState = State.checkState(state);
         userService.findById(ownerId);
-        return userBookingsByState(ownerId, bookingState, true);
+        return userBookingsByState(ownerId, bookingState, true, from, size);
     }
 
     private void checkBookingCreate(Booking booking, Long userId) {
@@ -95,36 +98,44 @@ public class BookingService {
         }
     }
 
-    private List<Booking> userBookingsByState(Long userId, State state, Boolean isOwner) {
+    private List<Booking> userBookingsByState(Long userId, State state, Boolean isOwner, Integer from, Integer size) {
         List<Booking> outList = null;
+        checkPageableParams(from, size);
+        Pageable pageable = PageRequest.of(from / size, size, Sort.by("start").descending());
         switch (state) {
             case ALL:
-                outList = bookingRepository.findByUserId(userId, isOwner, bookingRepository.START_DESC);
+                outList = bookingRepository.findByUserId(userId, isOwner, pageable).getContent();
                 break;
             case WAITING:
                 outList = bookingRepository.findByUserIdAndStatus(userId, isOwner, BookingStatuses.WAITING,
-                        bookingRepository.START_DESC);
+                        pageable).getContent();
                 break;
             case REJECTED:
                 outList = bookingRepository.findByUserIdAndStatus(userId, isOwner, BookingStatuses.REJECTED,
-                        bookingRepository.START_DESC);
+                        pageable).getContent();
                 break;
             case CURRENT:
                 outList = bookingRepository.findByUserCurrent(userId, isOwner, LocalDateTime.now(),
-                        bookingRepository.START_DESC);
+                        pageable).getContent();
                 break;
             case PAST:
                 outList = bookingRepository.findByUserPast(userId, isOwner, LocalDateTime.now(),
-                        bookingRepository.START_DESC);
+                        pageable).getContent();
                 break;
             case FUTURE:
                 outList = bookingRepository.findByUserFuture(userId, isOwner, LocalDateTime.now(),
-                        bookingRepository.START_DESC);
+                        pageable).getContent();
                 break;
             default:
                 throw new WrongStateException("Unknown state: UNSUPPORTED_STATUS");
         }
         return outList;
+    }
+
+    private void checkPageableParams(Integer from, Integer size) {
+        if ((from < 0) || (size <= 0)) {
+            throw new ValidationException("Введите верные данные для пагинации.");
+        }
     }
 
 }

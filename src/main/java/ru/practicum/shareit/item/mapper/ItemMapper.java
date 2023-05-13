@@ -22,6 +22,8 @@ public class ItemMapper {
                 .available(item.getAvailable())
                 .comments(item.getComments() != null ?
                         CommentMapper.mapToCommentDto(item.getComments()) : new ArrayList<>())
+                .requestId(item.getRequest() != null ?
+                        item.getRequest().getId() : null)
                 .build();
 
         if (userId.equals(item.getOwner().getId())) {

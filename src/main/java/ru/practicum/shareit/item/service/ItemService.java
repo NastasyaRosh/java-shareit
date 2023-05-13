@@ -10,8 +10,11 @@ import ru.practicum.shareit.exceptions.AccessException;
 import ru.practicum.shareit.exceptions.EntityNotFoundException;
 import ru.practicum.shareit.item.dao.CommentDao;
 import ru.practicum.shareit.item.dao.ItemDao;
+import ru.practicum.shareit.item.dto.InItemDto;
+import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.service.ItemRequestService;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
@@ -28,13 +31,15 @@ import static java.util.stream.Collectors.toList;
 @RequiredArgsConstructor
 public class ItemService {
     private final ItemDao itemRepository;
-    private final UserService userService;
     private final BookingDao bookingRepository;
     private final CommentDao commentRepository;
+    private final UserService userService;
+    private final ItemRequestService itemRequestService;
 
     @Transactional
-    public Item createItem(Item item, Long userId) {
-        checkCreationRequest(item);
+    public Item createItem(InItemDto inItemDto, Long userId) {
+        Item item = ItemMapper.toItem(inItemDto);
+        checkCreationRequest(inItemDto, item, userId);
         Item itemWithOwner = installOwner(item, userId);
         return itemRepository.save(itemWithOwner);
     }
@@ -75,13 +80,16 @@ public class ItemService {
         return commentRepository.save(comment);
     }
 
-    private void checkCreationRequest(Item item) {
+    private void checkCreationRequest(InItemDto inItemDto, Item item, Long userId) {
         if (item.getName() == null || item.getDescription() == null
                 || item.getName().isBlank() || item.getDescription().isBlank()) {
             throw new ValidationException("Передано пустое имя или описание.");
         }
         if (item.getAvailable() == null) {
             throw new ValidationException("Не передано значение доступности.");
+        }
+        if (inItemDto.getRequestId() != null) {
+            item.setRequest(itemRequestService.getItemRequestById(userId, inItemDto.getRequestId()));
         }
     }
 
