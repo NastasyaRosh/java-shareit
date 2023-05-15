@@ -6,7 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.booking.dao.BookingDao;
-import ru.practicum.shareit.exceptions.AccessException;
 import ru.practicum.shareit.exceptions.EntityNotFoundException;
 import ru.practicum.shareit.item.dao.CommentDao;
 import ru.practicum.shareit.item.dao.ItemDao;

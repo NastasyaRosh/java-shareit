@@ -3,11 +3,9 @@ package ru.practicum.shareit.util;
 import lombok.experimental.UtilityClass;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.mapper.ItemRequestMapper;
 import ru.practicum.shareit.request.model.ItemRequest;
-import ru.practicum.shareit.user.mapper.UserMapper;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -33,7 +31,6 @@ public class RequestTestUtil {
         requests.add(new ItemRequest(REQUEST_ID, REQUEST_DESCR, UserTestUtil.getUser(), dt, new ArrayList<>()));
         requests.add(new ItemRequest(ANOTHER_REQUEST_ID, REQUEST_DESCR, UserTestUtil.getUser(), dt, new ArrayList<>()));
         requests.get(1).getRequester().setId(ANOTHER_USER_ID);
-        //requests.get(0).setItems(List.of(ItemTestUtil.getItem()));
         return requests;
     }
 

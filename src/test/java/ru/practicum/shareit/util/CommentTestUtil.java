@@ -17,7 +17,6 @@ public class CommentTestUtil {
     }
 
     public static CommentDto getCommentDto() {
-        //return new CommentDto(null, COMMENT_TEXT, USER_NAME, LocalDateTime.now());
         return CommentDto.builder()
                 .text(COMMENT_TEXT)
                 .authorName(USER_NAME)

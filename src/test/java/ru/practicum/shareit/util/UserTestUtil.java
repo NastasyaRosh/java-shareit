@@ -1,7 +1,6 @@
 package ru.practicum.shareit.util;
 
 import lombok.experimental.UtilityClass;
-import org.h2.engine.UserBuilder;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
@@ -31,32 +30,18 @@ public class UserTestUtil {
     }
 
     public static UserDto getUserDto() {
-        //return new UserDto(null, USER_NAME, USER_EMAIL);
         return UserDto.builder().name(USER_NAME).email(USER_EMAIL).build();
     }
 
     public static UserDto getUpdatedUserDto() {
-        //return new UserDto(null, ANOTHER_USER_NAME, USER_EMAIL);
         return UserDto.builder().name(ANOTHER_USER_NAME).email(USER_EMAIL).build();
     }
 
-    public static UserDto getInvalidNameUserDto() {
-        //return new UserDto(null, "", USER_EMAIL);
-        return UserDto.builder().name(null).email(USER_EMAIL).build();
-    }
-
-    public static UserDto getInvalidEmailUserDto() {
-        //return new UserDto(null, USER_NAME, "invalidemail.com");
-        return UserDto.builder().name(USER_NAME).email("invalidemail.com").build();
-    }
-
     public static User getNewUser() {
-        //return new User(null, USER_NAME, USER_EMAIL);
         return User.builder().name(USER_NAME).email(USER_EMAIL).build();
     }
 
     public static User getNewAnotherUser() {
-        //return new User(null, ANOTHER_USER_NAME, ANOTHER_USER_EMAIL);
         return User.builder().name(ANOTHER_USER_NAME).email(ANOTHER_USER_EMAIL).build();
     }
 }

@@ -21,7 +21,6 @@ import ru.practicum.shareit.util.UserTestUtil;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 import java.util.Optional;
 
 import static java.util.Collections.emptyList;
@@ -87,8 +86,6 @@ public class RequestServiceTest {
 
     @Test
     void shouldCreateRequestWhenCallCreate() {
-        //when(requestRep.existsById(REQUEST_ID)).thenReturn(false);
-        //when(requestRep.existsById(ANOTHER_REQUEST_ID)).thenReturn(true);
         when(requestRep.save(any())).thenAnswer(returnsFirstArg());
         when(userService.findById(USER_ID)).thenReturn(UserTestUtil.getUser());
 
@@ -97,6 +94,5 @@ public class RequestServiceTest {
         assertEquals(getRequest(dt), itemRequest);
         ItemRequest request = getRequest(dt);
         request.setId(ANOTHER_REQUEST_ID);
-        //assertThrows(AlreadyExistsException.class, () -> requestService.createRequest(request, USER_ID));
     }
 }

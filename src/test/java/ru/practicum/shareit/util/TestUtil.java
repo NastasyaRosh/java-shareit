@@ -19,7 +19,6 @@ public class TestUtil {
 
     public static final ResultMatcher OK = status().isOk();
     public static final ResultMatcher NOT_FOUND = status().isNotFound();
-    public static final ResultMatcher BAD_REQUEST = status().isBadRequest();
 
     public static MockHttpServletRequestBuilder getGetReq(String path, Long headerId) {
         MockHttpServletRequestBuilder req = get(path)
