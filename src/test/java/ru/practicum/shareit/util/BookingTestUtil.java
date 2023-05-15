@@ -1,6 +1,8 @@
 package ru.practicum.shareit.util;
 
 import lombok.experimental.UtilityClass;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import ru.practicum.shareit.booking.dto.InBookingDto;
 import ru.practicum.shareit.booking.dto.OutBookingDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
@@ -27,8 +29,8 @@ public class BookingTestUtil {
     public static Booking getBooking(LocalDateTime dt) {
         return new Booking(
                 BOOKING_ID,
-                dt,
                 dt.plusDays(1).truncatedTo(ChronoUnit.MINUTES),
+                dt.plusDays(2).truncatedTo(ChronoUnit.MINUTES),
                 ItemTestUtil.getItem(),
                 UserTestUtil.getUser(),
                 DEFAULT_STATUS
@@ -50,8 +52,8 @@ public class BookingTestUtil {
     public static Booking getBookingWithStatus(LocalDateTime dt, BookingStatuses status) {
         return new Booking(
                 BOOKING_ID,
-                dt.truncatedTo(ChronoUnit.MINUTES),
                 dt.plusDays(1).truncatedTo(ChronoUnit.MINUTES),
+                dt.plusDays(2).truncatedTo(ChronoUnit.MINUTES),
                 ItemTestUtil.getItem(),
                 UserTestUtil.getUser(),
                 status
@@ -83,6 +85,10 @@ public class BookingTestUtil {
                 .booker(booker)
                 .status(status)
                 .build();
+    }
+
+    public static Page<Booking> getBookingsPage(LocalDateTime dt) {
+        return new PageImpl<>(getBookingsList(dt));
     }
 }
 

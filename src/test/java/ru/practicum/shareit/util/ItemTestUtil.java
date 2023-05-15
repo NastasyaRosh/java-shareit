@@ -3,9 +3,14 @@ package ru.practicum.shareit.util;
 import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.item.dto.InItemDto;
 import ru.practicum.shareit.item.dto.OutItemDto;
+import ru.practicum.shareit.item.dto.ShortItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @UtilityClass
 public class ItemTestUtil {
@@ -57,6 +62,13 @@ public class ItemTestUtil {
                 .available(true)
                 .owner(owner)
                 .build();
+    }
+
+    public static List<Item> getListItemsWithRequest() {
+        List<Item> items = new ArrayList<>();
+        items.add(getItem());
+        items.get(0).setRequest(RequestTestUtil.getRequest(LocalDateTime.now()));
+        return items;
     }
 }
 
