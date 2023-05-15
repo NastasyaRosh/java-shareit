@@ -45,6 +45,14 @@ public class BookingTestUtil {
                 .build();
     }
 
+    public static InBookingDto getInputBookingDtoWrongDate(LocalDateTime dt) {
+        return InBookingDto.builder()
+                .start(dt.plusDays(2).truncatedTo(ChronoUnit.MINUTES))
+                .end(dt.plusDays(2).truncatedTo(ChronoUnit.MINUTES))
+                .itemId(ITEM_ID)
+                .build();
+    }
+
     public static OutBookingDto getOutputBookingDto(LocalDateTime dt) {
         return BookingMapper.toBookingDto(getBooking(dt));
     }

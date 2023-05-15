@@ -21,12 +21,6 @@ public class ErrorHandler {
         return new ErrorResponse(e.getMessage());
     }
 
-    @ExceptionHandler({UserAlreadyExistException.class})
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse alreadyExist(final RuntimeException e) {
-        return new ErrorResponse(e.getMessage());
-    }
-
     @ExceptionHandler({ValidationException.class, WrongDatesException.class, WrongStateException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse validationWrong(final RuntimeException e) {

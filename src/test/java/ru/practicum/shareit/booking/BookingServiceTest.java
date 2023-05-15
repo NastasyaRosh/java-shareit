@@ -12,6 +12,8 @@ import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.exceptions.AccessException;
 import ru.practicum.shareit.exceptions.EntityNotFoundException;
+import ru.practicum.shareit.exceptions.WrongDatesException;
+import ru.practicum.shareit.exceptions.WrongStateException;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.util.ItemTestUtil;
@@ -68,6 +70,7 @@ public class BookingServiceTest {
                 bookingService.findAllByBooker(USER_ID, String.valueOf(State.FUTURE), 0, 30).get(0));
         assertEquals(getBookingsList(dt),
                 bookingService.findAllByBooker(USER_ID, String.valueOf(State.PAST), 0, 30));
+        assertThrows(WrongStateException.class, () -> bookingService.findAllByBooker(USER_ID, "WRONG STATE", 0, 30));
     }
 
     @Test
@@ -157,6 +160,7 @@ public class BookingServiceTest {
         Booking booking = getBooking(dt);
         booking.getItem().setAvailable(false);
 
+        assertThrows(WrongDatesException.class, () -> bookingService.createBooking(getInputBookingDtoWrongDate(dt), ANOTHER_USER_ID));
         Booking bookingOut = bookingService.createBooking(getInputBookingDto(dt), ANOTHER_USER_ID);
         bookingOut.setId(1);
         assertEquals(getBooking(dt), bookingOut);
