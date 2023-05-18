@@ -122,7 +122,7 @@ public class ItemService {
         }
     }
 
-    private Item setBookingsForItem(Item item) {
+    private void setBookingsForItem(Item item) {
         item.setLastBooking(
                 bookingRepository.findTopByItemIdAndStatusAndStartLessThanEqual(
                         item.getId(),
@@ -137,7 +137,6 @@ public class ItemService {
                         LocalDateTime.now(),
                         bookingRepository.START_ASC)
         );
-        return item;
     }
 
     private List<Item> setBookingsForListItems(List<Item> items) {

@@ -37,8 +37,7 @@ public class UserService {
     }
 
     public User findById(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("Запрашиваемого пользователя не существует."));
-        return user;
+        return userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("Запрашиваемого пользователя не существует."));
     }
 
     public List<User> getAllUsers() {

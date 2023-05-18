@@ -8,7 +8,7 @@ public enum State {
     public static State checkState(String state) {
         try {
             return State.valueOf(state);
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             throw new WrongStateException("Unknown state: UNSUPPORTED_STATUS");
         }
     }
