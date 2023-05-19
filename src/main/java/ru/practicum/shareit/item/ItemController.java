@@ -9,7 +9,6 @@ import ru.practicum.shareit.item.dto.InItemDto;
 import ru.practicum.shareit.item.dto.OutItemDto;
 import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 
 import java.util.List;
@@ -24,8 +23,7 @@ public class ItemController {
     @PostMapping
     public OutItemDto createItem(@RequestHeader("x-sharer-user-id") Long userId, @RequestBody InItemDto inItemDto) {
         log.debug("Создание вещи.");
-        Item item = ItemMapper.toItem(inItemDto);
-        return ItemMapper.toItemDto(itemService.createItem(item, userId), userId);
+        return ItemMapper.toItemDto(itemService.createItem(inItemDto, userId), userId);
     }
 
     @PatchMapping("/{itemId}")
