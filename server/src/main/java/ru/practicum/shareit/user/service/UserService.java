@@ -7,7 +7,6 @@ import ru.practicum.shareit.exceptions.EntityNotFoundException;
 import ru.practicum.shareit.user.dao.UserDao;
 import ru.practicum.shareit.user.model.User;
 
-//import javax.validation.ValidationException;
 import java.util.List;
 
 @Service
@@ -18,7 +17,6 @@ public class UserService {
 
     @Transactional
     public User createUser(User user) {
-        //checkCreationUser(user);
         return userRepository.save(user);
     }
 
@@ -48,14 +46,4 @@ public class UserService {
     public void deleteUser(Long userId) {
         userRepository.deleteById(userId);
     }
-
-    /*private boolean isEmail(String email) {
-        return email.contains("@");
-    }*/
-
-/*    private void checkCreationUser(User user) {
-        if (user.getEmail() == null || user.getName() == null || !isEmail(user.getEmail())) {
-            throw new ValidationException("Передано пустое имя или пустая/неверная почта.");
-        }
-    }*/
 }

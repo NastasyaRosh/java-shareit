@@ -50,7 +50,7 @@ public class BookingClient extends BaseClient {
         return patch("/" + bookingId + "?approved={approved}", userId, params);
     }
 
-    public ResponseEntity<Object> findAllByItemsOwner(Long userId, BookingState state, Long from, Integer size) {
+    public ResponseEntity<Object> findAllByItemsOwner(Long userId, BookingState state, Integer from, Integer size) {
         Map<String, Object> params = Map.of(
                 "state", state,
                 "from", from,

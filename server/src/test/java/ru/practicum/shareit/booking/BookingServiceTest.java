@@ -19,7 +19,6 @@ import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.util.ItemTestUtil;
 import ru.practicum.shareit.util.UserTestUtil;
 
-//import javax.validation.ValidationException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
@@ -128,26 +127,6 @@ public class BookingServiceTest {
         assertThrows(EntityNotFoundException.class, () -> bookingService.getBookingById(ANOTHER_BOOKING_ID, USER_ID));
         assertThrows(AccessException.class, () -> bookingService.getBookingById(BOOKING_ID, ANOTHER_USER_ID));
     }
-
-/*    @Test
-    void shouldReturnBookingOrThrowWhenCallApproveById() {
-        when(bookingRep.findById(BOOKING_ID)).thenReturn(Optional.of(getBooking(dt)));
-        when(bookingRep.findById(ANOTHER_BOOKING_ID))
-                .thenReturn(Optional.of(getBookingWithStatus(dt, BookingStatuses.APPROVED)));
-        when(bookingRep.findById(3L))
-                .thenReturn(Optional.empty());
-
-
-        assertThrows(EntityNotFoundException.class,
-                () -> bookingService.updateBooking(USER_ID, 3L, true));
-        assertThrows(AccessException.class,
-                () -> bookingService.updateBooking(ANOTHER_USER_ID, BOOKING_ID, true));
-        assertThrows(ValidationException.class,
-                () -> bookingService.updateBooking(USER_ID, ANOTHER_BOOKING_ID, true));
-
-        assertEquals(getBookingWithStatus(dt, BookingStatuses.APPROVED),
-                bookingService.updateBooking(USER_ID, BOOKING_ID, true));
-    }*/
 
     @Test
     void shouldCreateBookingWhenCallCreateBooking() {

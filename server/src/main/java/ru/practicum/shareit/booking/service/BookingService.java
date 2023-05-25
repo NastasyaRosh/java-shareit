@@ -18,7 +18,6 @@ import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
-//import javax.validation.ValidationException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -97,7 +96,6 @@ public class BookingService {
 
     private List<Booking> userBookingsByState(Long userId, State state, Boolean isOwner, Integer from, Integer size) {
         List<Booking> outList = null;
-        //checkPageableParams(from, size);
         Pageable pageable = PageRequest.of(from / size, size, Sort.by("start").descending());
         switch (state) {
             case ALL:
@@ -128,11 +126,5 @@ public class BookingService {
         }
         return outList;
     }
-
-/*    private void checkPageableParams(Integer from, Integer size) {
-        if ((from < 0) || (size <= 0)) {
-            throw new ValidationException("Введите верные данные для пагинации.");
-        }
-    }*/
 
 }

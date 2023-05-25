@@ -15,7 +15,6 @@ import ru.practicum.shareit.request.mapper.ItemRequestMapper;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.service.UserService;
 
-//import javax.validation.ValidationException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -30,7 +29,6 @@ public class ItemRequestService {
 
     @Transactional
     public ItemRequest createRequest(ItemRequestDto itemRequestDto, Long userId) {
-        //checkNewRequest(itemRequestDto);
         ItemRequest itemRequest = ItemRequestMapper.toItemRequest(itemRequestDto);
         itemRequest.setRequester(userService.findById(userId));
         itemRequestRepository.save(itemRequest);
@@ -53,23 +51,10 @@ public class ItemRequestService {
     }
 
     public List<ItemRequest> getAllRequests(Long userId, Integer from, Integer size) {
-        //checkPageableParams(from, size);
         Pageable pageable = PageRequest.of(from / size, size, Sort.by("created").descending());
         List<ItemRequest> requests = itemRequestRepository.findAllByRequesterIdIsNot(userId, pageable).getContent();
         return setItems(requests);
     }
-
-/*    private void checkNewRequest(ItemRequestDto itemRequestDto) {
-        if (itemRequestDto.getDescription() == null) {
-            throw new ValidationException("Введите непустой запрос.");
-        }
-    }
-
-    private void checkPageableParams(Integer from, Integer size) {
-        if ((from < 0) || (size <= 0)) {
-            throw new ValidationException("Введите верные данные для пагинации.");
-        }
-    }*/
 
     private List<ItemRequest> setItems(List<ItemRequest> requests) {
         Map<ItemRequest, List<Item>> items = itemRepository.findAllByRequestIn(requests).stream()

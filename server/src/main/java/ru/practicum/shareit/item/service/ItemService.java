@@ -7,6 +7,7 @@ import ru.practicum.shareit.booking.dao.BookingDao;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatuses;
 import ru.practicum.shareit.exceptions.AccessException;
+import ru.practicum.shareit.exceptions.AvailableException;
 import ru.practicum.shareit.exceptions.EntityNotFoundException;
 import ru.practicum.shareit.item.dao.CommentDao;
 import ru.practicum.shareit.item.dao.ItemDao;
@@ -18,7 +19,6 @@ import ru.practicum.shareit.request.service.ItemRequestService;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
-//import javax.validation.ValidationException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -73,7 +73,7 @@ public class ItemService {
 
     @Transactional
     public Comment createComment(Long userId, Long itemId, String text) {
-        //checkComment(itemId, userId, text);
+        checkComment(itemId, userId, text);
         User user = userService.findById(userId);
         Item item = getItem(itemId);
         Comment comment = Comment.builder().text(text).author(user).item(item).created(LocalDateTime.now()).build();
@@ -81,13 +81,6 @@ public class ItemService {
     }
 
     private void checkCreationRequest(InItemDto inItemDto, Item item, Long userId) {
-        /*if (item.getName() == null || item.getDescription() == null
-                || item.getName().isBlank() || item.getDescription().isBlank()) {
-            throw new ValidationException("Передано пустое имя или описание.");
-        }
-        if (item.getAvailable() == null) {
-            throw new ValidationException("Не передано значение доступности.");
-        }*/
         if (inItemDto.getRequestId() != null) {
             item.setRequest(itemRequestService.getItemRequestById(userId, inItemDto.getRequestId()));
         }
@@ -160,15 +153,12 @@ public class ItemService {
         return items;
     }
 
-/*    private void checkComment(Long itemId, Long userId, String text) {
-        if (text.isEmpty() || text.isBlank()) {
-            throw new ValidationException("Нельзя оставить пустой комментарий.");
-        }
+    private void checkComment(Long itemId, Long userId, String text) {
         List<Booking> bookings =
                 bookingRepository.findAllRealItemBookingsForUserAtTheMoment(itemId, userId, LocalDateTime.now());
         if (bookings.size() == 0) {
-            throw new ValidationException(String.format("Пользователь с id = %s не может комментировать вещь с id = %s.",
+            throw new AvailableException(String.format("Пользователь с id = %s не может комментировать вещь с id = %s.",
                     userId, itemId));
         }
-    }*/
+    }
 }

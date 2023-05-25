@@ -17,7 +17,6 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.util.ItemTestUtil;
 
-//import javax.validation.ValidationException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -126,7 +125,7 @@ public class ItemServiceTest {
         verify(itemRep, times(3)).findById(anyLong());
     }
 
-    /*@Test
+    @Test
     void shouldCreateCommentWhenCallCreateComment() {
         when(bookingRep.findAllRealItemBookingsForUserAtTheMoment(anyLong(), anyLong(), any()))
                 .thenReturn(getBookingsList(LocalDateTime.now()));
@@ -139,12 +138,5 @@ public class ItemServiceTest {
         verify(bookingRep, times(1))
                 .findAllRealItemBookingsForUserAtTheMoment(anyLong(), anyLong(), any());
         verify(commentRep, times(1)).save(any());
-    }*/
-
-    /*@Test
-    void shouldThrowExceptionWhenCallCreateComment() {
-        when(bookingRep.findAllRealItemBookingsForUserAtTheMoment(anyLong(), anyLong(), any()))
-                .thenReturn(new ArrayList<>());
-        assertThrows(ValidationException.class, () -> itemService.createComment(USER_ID, ITEM_ID, comment.getText()));
-    }*/
+    }
 }
