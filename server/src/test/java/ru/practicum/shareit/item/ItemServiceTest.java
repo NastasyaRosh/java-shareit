@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Sort;
 import ru.practicum.shareit.booking.dao.BookingDao;
 import ru.practicum.shareit.exceptions.EntityNotFoundException;
 import ru.practicum.shareit.item.dao.CommentDao;
@@ -60,13 +61,13 @@ public class ItemServiceTest {
 
     @Test
     void shouldReturnItemListWhenCallFindByUserId() {
-        when(itemRep.findAllByOwnerId(USER_ID)).thenReturn(List.of(item));
+        when(itemRep.findAllByOwnerId(USER_ID, Sort.by("id"))).thenReturn(List.of(item));
         when(bookingRep.findByItemInAndStatus(any(), any(), any()))
                 .thenReturn(getBookingsList(LocalDateTime.now()));
 
         List<Item> items = itemService.getAllMyItems(USER_ID);
 
-        verify(itemRep, times(1)).findAllByOwnerId(USER_ID);
+        verify(itemRep, times(1)).findAllByOwnerId(USER_ID, Sort.by("id"));
         assertThat(items, notNullValue());
         assertEquals(1, items.size());
         assertEquals(ITEM_ID, items.get(0).getId());
@@ -115,7 +116,7 @@ public class ItemServiceTest {
     void shouldUpdateAndReturnItemWhenCallUpdate() {
         when(itemRep.findById(ITEM_ID)).thenReturn(Optional.ofNullable(item));
         when(itemRep.findById(ANOTHER_ITEM_ID)).thenReturn(Optional.empty());
-        when(itemRep.findAllByOwnerId(USER_ID)).thenReturn(List.of(item));
+        when(itemRep.findAllByOwnerId(USER_ID, Sort.by("id"))).thenReturn(List.of(item));
 
         assertThrows(EntityNotFoundException.class, () -> itemService.updateItem(updatedItem, ANOTHER_ITEM_ID, USER_ID));
 

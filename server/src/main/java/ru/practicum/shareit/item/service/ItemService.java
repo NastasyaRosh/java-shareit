@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dao.BookingDao;
@@ -60,7 +61,7 @@ public class ItemService {
     }
 
     public List<Item> getAllMyItems(Long userId) {
-        List<Item> items = itemRepository.findAllByOwnerId(userId);
+        List<Item> items = itemRepository.findAllByOwnerId(userId, Sort.by("id"));
         return setBookingsForListItems(items);
     }
 

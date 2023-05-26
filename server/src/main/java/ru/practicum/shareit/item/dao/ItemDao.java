@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.dao;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -10,7 +11,7 @@ import java.util.List;
 
 @Repository
 public interface ItemDao extends JpaRepository<Item, Long> {
-    List<Item> findAllByOwnerId(Long ownerId);
+    List<Item> findAllByOwnerId(Long ownerId, Sort sort);
 
     @Query("select i from Item as i " +
             "where (upper(i.name) like upper(concat('%', ?1, '%')) " +
