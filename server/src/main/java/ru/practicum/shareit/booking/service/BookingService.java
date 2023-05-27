@@ -79,10 +79,6 @@ public class BookingService {
         if (!item.getAvailable()) {
             throw new AvailableException("Вещь не доступна.");
         }
-        if ((booking.getEnd().isBefore(booking.getStart())) || (booking.getEnd().equals(booking.getStart()))
-                || (booking.getStart().isBefore(LocalDateTime.now()))) {
-            throw new WrongDatesException("Проверьте запрашиваемые даты.");
-        }
     }
 
     private void checkBookingUpdate(Booking booking, Long userId) {

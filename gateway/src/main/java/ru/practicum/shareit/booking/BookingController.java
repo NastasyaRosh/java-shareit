@@ -9,11 +9,13 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookItemRequestDto;
 import ru.practicum.shareit.booking.dto.BookingState;
+import ru.practicum.shareit.exception.WrongDatesException;
 import ru.practicum.shareit.exception.WrongStateException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
+import java.time.LocalDateTime;
 
 @Controller
 @RequestMapping(path = "/bookings")
@@ -37,6 +39,12 @@ public class BookingController {
     @PostMapping
     public ResponseEntity<Object> bookItem(@RequestHeader("X-Sharer-User-Id") long userId,
                                            @RequestBody @Valid BookItemRequestDto requestDto) {
+        if ((requestDto.getStart() == null) || (requestDto.getEnd() == null)
+                || (requestDto.getEnd().isBefore(requestDto.getStart()))
+                || (requestDto.getEnd().equals(requestDto.getStart()))
+                || (requestDto.getStart().isBefore(LocalDateTime.now()))) {
+            throw new WrongDatesException("Проверьте запрашиваемые даты.");
+        }
         log.info("Creating booking {}, userId={}", requestDto, userId);
         return bookingClient.bookItem(userId, requestDto);
     }

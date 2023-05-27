@@ -16,7 +16,7 @@ import javax.validation.ValidationException;
         RequestController.class})
 public class ErrorHandler {
 
-    @ExceptionHandler({WrongStateException.class, ValidationException.class, MethodArgumentNotValidException.class})
+    @ExceptionHandler({WrongStateException.class, ValidationException.class, MethodArgumentNotValidException.class, WrongDatesException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse validationWrong(final RuntimeException e) {
         return new ErrorResponse(e.getMessage());

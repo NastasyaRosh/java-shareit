@@ -5,7 +5,6 @@ import ru.practicum.shareit.booking.dto.OutBookingDto;
 import ru.practicum.shareit.booking.dto.ShortBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatuses;
-import ru.practicum.shareit.exceptions.WrongDatesException;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.mapper.UserMapper;
@@ -27,9 +26,6 @@ public class BookingMapper {
     }
 
     public static Booking toBooking(InBookingDto inBookingDto, Item item, User user) {
-        if ((inBookingDto.getStart() == null) || (inBookingDto.getEnd() == null)) {
-            throw new WrongDatesException("Проверьте запрашиваемые даты.");
-        }
         return Booking.builder()
                 .id(inBookingDto.getId())
                 .start(inBookingDto.getStart())

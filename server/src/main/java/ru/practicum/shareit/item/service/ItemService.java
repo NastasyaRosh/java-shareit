@@ -74,7 +74,7 @@ public class ItemService {
 
     @Transactional
     public Comment createComment(Long userId, Long itemId, String text) {
-        checkComment(itemId, userId, text);
+        checkComment(itemId, userId);
         User user = userService.findById(userId);
         Item item = getItem(itemId);
         Comment comment = Comment.builder().text(text).author(user).item(item).created(LocalDateTime.now()).build();
@@ -154,10 +154,10 @@ public class ItemService {
         return items;
     }
 
-    private void checkComment(Long itemId, Long userId, String text) {
+    private void checkComment(Long itemId, Long userId) {
         List<Booking> bookings =
                 bookingRepository.findAllRealItemBookingsForUserAtTheMoment(itemId, userId, LocalDateTime.now());
-        if (bookings.size() == 0) {
+        if (bookings.isEmpty()) {
             throw new AvailableException(String.format("Пользователь с id = %s не может комментировать вещь с id = %s.",
                     userId, itemId));
         }

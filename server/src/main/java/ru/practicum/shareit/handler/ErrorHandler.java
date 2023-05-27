@@ -19,7 +19,7 @@ public class ErrorHandler {
         return new ErrorResponse(e.getMessage());
     }
 
-    @ExceptionHandler({WrongDatesException.class, WrongStateException.class, AvailableException.class})
+    @ExceptionHandler({WrongStateException.class, AvailableException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse validationWrong(final RuntimeException e) {
         return new ErrorResponse(e.getMessage());
